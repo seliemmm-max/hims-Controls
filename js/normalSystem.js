@@ -51,17 +51,23 @@ async function processNormal() {
     const header = normalRowsRaw[0];
     let idxCode = -1, idxName = -1, idxMid = -1, idxAct = -1, idxFinal = -1;
     for (let i = 0; i < header.length; i++) {
-        const c = String(header[i] || "").toLowerCase();
-        if (c.includes('كود') || c === 'code') idxCode  = i;
-        if (c.includes('اسم'))                  idxName  = i;
-        if (c.includes('ميد'))                  idxMid   = i;
-        if (c.includes('اعمال'))                idxAct   = i;
-        if (c.includes('فاينل'))                idxFinal = i;
+        const c = String(header[i] || "").trim().toLowerCase();
+        if (c.includes('كود') || c === 'code' || c.includes('رقم')) idxCode  = i;
+        if (c.includes('اسم') || c.includes('name'))                idxName  = i;
+        if (c.includes('ميد') || c.includes('mid'))                 idxMid   = i;
+        if (c.includes('اعمال') || c.includes('أعمال') ||
+            c.includes('عمال')  || c.includes('act'))               idxAct   = i;
+        if (c.includes('فاينل') || c.includes('final') ||
+            c.includes('نهائي') || c.includes('final'))             idxFinal = i;
     }
     if (idxCode  === -1) idxCode  = 0;
     if (idxMid   === -1) idxMid   = 2;
     if (idxAct   === -1) idxAct   = 3;
     if (idxFinal === -1) idxFinal = 4;
+
+    // ── تشخيص الأعمدة في وضع dev ──
+    console.log('🔍 أعمدة الهيدر المكتشفة:', { idxCode, idxName, idxMid, idxAct, idxFinal });
+    console.log('🔍 الهيدر الأول:', header);
 
     const results = [], beforeRaise = [];
     beneficiaries = [];
@@ -119,6 +125,20 @@ async function processNormal() {
     processedData      = results;
     currentSys         = 'normal';
     rawBeforeRaiseData = beforeRaise;
+
+    if (!results.length) {
+        document.getElementById('normalMsg').innerHTML = `
+            <div class="alert-info" style="border-color:#c0392b; background:#ffeaea;">
+                ⚠️ لم يتم العثور على بيانات صالحة!<br>
+                <strong>تحقق من:</strong><br>
+                • أن الصف الأول هو الهيدر (كود، اسم، ميد، أعمال، فاينل)<br>
+                • أن الأكواد أرقام وليست فارغة<br>
+                • أن الدرجات أرقام أو "غ" أو "إلغاء"<br>
+                • ترتيب الأعمدة: كود | اسم | ميد | أعمال | فاينل
+                <br><small style="color:#888">عدد الصفوف المرفوعة: ${normalRowsRaw.length - 1} صف بيانات</small>
+            </div>`;
+        return;
+    }
 
     displayTable(results, 'normalTable');
     updateCompareStats(beforeRaise.map(s => s.totalBefore), results.map(s => s.finalComputed));

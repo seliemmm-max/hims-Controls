@@ -33,6 +33,14 @@ function initExportCSV() {
     document.getElementById('exportNormalCSVBtn')?.addEventListener('click', doExport);
     // زر النظام المرن
     document.getElementById('exportFlexCSVBtn')?.addEventListener('click', doExport);
+
+    // ── أزرار تنزيل شيت الغياب ──
+    document.getElementById('exportNormalAbsentBtn')?.addEventListener('click', () =>
+        exportAbsentStudents('النظام_العادي')
+    );
+    document.getElementById('exportFlexAbsentBtn')?.addEventListener('click', () =>
+        exportAbsentStudents('النظام_المرن')
+    );
 }
 
 // ---- نظام التبويبات ----

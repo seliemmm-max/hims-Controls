@@ -107,10 +107,10 @@ function processFlex() {
         const header = flexRowsRaw[0];
         let idxCode = -1, idxName = -1, idxScore = -1;
         for (let i = 0; i < header.length; i++) {
-            const c = String(header[i] || "").toLowerCase();
-            if (c.includes('كود'))   idxCode  = i;
-            if (c.includes('اسم'))   idxName  = i;
-            if (c.includes('درجة'))  idxScore = i;
+            const c = String(header[i] || "").trim().toLowerCase();
+            if (c.includes('كود') || c.includes('رقم') || c === 'code') idxCode  = i;
+            if (c.includes('اسم') || c.includes('name'))                 idxName  = i;
+            if (c.includes('درجة') || c.includes('score'))               idxScore = i;
         }
         if (idxCode  === -1) idxCode  = 0;
         if (idxScore === -1) idxScore = 3;
@@ -140,12 +140,14 @@ function processFlex() {
         const header = flexRowsRaw[0];
         let idxCode = -1, idxName = -1, idxMid = -1, idxAct = -1, idxFinal = -1;
         for (let i = 0; i < header.length; i++) {
-            const c = String(header[i] || "").toLowerCase();
-            if (c.includes('كود'))    idxCode  = i;
-            if (c.includes('اسم'))    idxName  = i;
-            if (c.includes('ميد'))    idxMid   = i;
-            if (c.includes('اعمال')) idxAct   = i;
-            if (c.includes('فاينل')) idxFinal = i;
+            const c = String(header[i] || "").trim().toLowerCase();
+            if (c.includes('كود') || c.includes('رقم') || c === 'code') idxCode  = i;
+            if (c.includes('اسم') || c.includes('name'))                 idxName  = i;
+            if (c.includes('ميد') || c.includes('mid'))                  idxMid   = i;
+            if (c.includes('اعمال') || c.includes('أعمال') ||
+                c.includes('عمال')  || c.includes('act'))                idxAct   = i;
+            if (c.includes('فاينل') || c.includes('final') ||
+                c.includes('نهائي'))                                      idxFinal = i;
         }
         if (idxCode  === -1) idxCode  = 0;
         if (idxMid   === -1) idxMid   = 2;
@@ -193,12 +195,14 @@ function processFlex() {
         const header = flexRowsRaw[0];
         let idxCode = -1, idxName = -1, idxMid = -1, idxAct = -1, idxFinal = -1;
         for (let i = 0; i < header.length; i++) {
-            const c = String(header[i] || "").toLowerCase();
-            if (c.includes('كود'))    idxCode  = i;
-            if (c.includes('اسم'))    idxName  = i;
-            if (c.includes('ميد'))    idxMid   = i;
-            if (c.includes('اعمال')) idxAct   = i;
-            if (c.includes('فاينل')) idxFinal = i;
+            const c = String(header[i] || "").trim().toLowerCase();
+            if (c.includes('كود') || c.includes('رقم') || c === 'code') idxCode  = i;
+            if (c.includes('اسم') || c.includes('name'))                 idxName  = i;
+            if (c.includes('ميد') || c.includes('mid'))                  idxMid   = i;
+            if (c.includes('اعمال') || c.includes('أعمال') ||
+                c.includes('عمال')  || c.includes('act'))                idxAct   = i;
+            if (c.includes('فاينل') || c.includes('final') ||
+                c.includes('نهائي'))                                      idxFinal = i;
         }
         if (idxCode  === -1) idxCode  = 0;
         if (idxMid   === -1) idxMid   = 2;
@@ -259,6 +263,19 @@ function processFlex() {
     processedData      = results;
     currentSys         = 'flex';
     rawBeforeRaiseData = beforeRaise;
+
+    if (!results.length) {
+        document.getElementById('flexMsg').innerHTML = `
+            <div class="alert-info" style="border-color:#c0392b; background:#ffeaea;">
+                ⚠️ لم يتم العثور على بيانات صالحة!<br>
+                <strong>تحقق من:</strong><br>
+                • أن الصف الأول هو الهيدر (كود، اسم، ميد، أعمال، فاينل)<br>
+                • أن الأكواد أرقام وليست فارغة<br>
+                • أن الدرجات أرقام أو "غ" أو "إلغاء"<br>
+                <small style="color:#888">عدد الصفوف المرفوعة: ${flexRowsRaw.length - 1} صف بيانات</small>
+            </div>`;
+        return;
+    }
 
     displayTable(results, 'flexTable');
     updateCompareStats(beforeRaise.map(s => s.totalBefore), results.map(s => s.finalComputed));

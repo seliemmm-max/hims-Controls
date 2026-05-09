@@ -25,9 +25,12 @@ function readExcel(file) {
  * تحليل درجة: 'غ' → -3، 'إلغاء' → -8، رقم → رقم، غير ذلك → null
  */
 function parseGrade(g) {
-    if (g === 'غ')      return -3;
-    if (g === 'إلغاء')  return -8;
-    const n = parseFloat(g);
+    if (g === null || g === undefined || g === '') return null;
+    const s = String(g).trim();
+    if (s === '' )       return null;
+    if (s === 'غ' || s === 'غـ' || s === 'غ ') return -3;
+    if (s === 'إلغاء' || s === 'الغاء' || s === 'ألغاء') return -8;
+    const n = parseFloat(s);
     return isNaN(n) ? null : n;
 }
 
