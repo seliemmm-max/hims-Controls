@@ -21,7 +21,12 @@ function initExportCSV() {
         if (!processedData.length) { alert('لا توجد بيانات معالجة'); return; }
         const rows = [['1', '1', '1', '1']];
         for (const s of processedData)
-            rows.push([s.code, s.mid, s.act, s.finalOriginal]);
+            rows.push([
+    s.code,
+    Math.ceil(s.mid),
+    Math.ceil(s.act),
+    Math.ceil(s.finalOriginal)
+]);
         const ws = XLSX.utils.aoa_to_sheet(rows);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Result');
