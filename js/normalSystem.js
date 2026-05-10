@@ -99,7 +99,9 @@ async function processNormal() {
         let finalAct = act;
         if (normalSettings.applyHEnabled && !isApproved &&
             mid >= 0 && act >= 0 && finalOrig >= 0 && !isNaN(finalOrig)) {
-            const added = act + normalSettings.hValue + (finalOrig / 50) * normalSettings.hValue;
+           const variable = 10 - normalSettings.hValue;
+           const added = act + normalSettings.hValue + (finalOrig / 50) * variable;
+           
             finalAct = Math.ceil(added);
             if (finalAct > 30) finalAct = 30;
             if (finalAct < 0)  finalAct = 0;
